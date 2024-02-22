@@ -1,6 +1,9 @@
-# Docker image for PostgresSQL backups on Dalmatian to S3
+# Docker image for sql backups on Dalmatian to S3
 
-We use this image to backup our PostgresSQL databases to S3. It is based on the
-[official PostgresSQL image](https://hub.docker.com/_/postgres/) but adds the
-[AWS CLI](https://aws.amazon.com/cli/) so that we can push to S3. It also adds
-AWS certs.
+We use this image to backup our MySQL and PostgresSQL databases to S3.
+
+This image contains the following tools:
+
+- PostgreSQL client tools
+- MySQL client tools
+- aws cli
