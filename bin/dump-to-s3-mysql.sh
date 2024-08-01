@@ -55,7 +55,7 @@ DATABASES="$(mysql -N \
 
 while IFS='' read -r DB_NAME
 do
-  DUMP_TARGET="/$DUMP_DIR/$DATE_STRING-$DB_NAME.sql"
+  DUMP_TARGET="$DUMP_DIR/$DATE_STRING-$DB_NAME.sql"
   echo "==> Dumping '$DB_NAME' database to $DUMP_TARGET ..."
   mysqldump \
     -u "$DB_USER" \
@@ -74,6 +74,6 @@ aws s3 sync . "s3://$BUCKET_NAME" \
 echo "==> Uploads complete"
 
 echo "==> Cleaning SQL files ..."
-rm /tmp/sqlbackups/*.sql
+rm "$DUMP_DIR/*.sql"
 
 echo "==> SQL Backup Success!"
