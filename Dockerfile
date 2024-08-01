@@ -23,3 +23,4 @@ RUN echo 'deb [ signed-by=/etc/apt/keyrings/mysql.gpg ] http://repo.mysql.com/ap
     && apt-get update \
     && apt-get clean
 
+COPY ./bin/. /usr/local/bin/
