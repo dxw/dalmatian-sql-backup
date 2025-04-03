@@ -1,4 +1,5 @@
 FROM debian:bookworm-slim
+
 RUN apt-get update && \
     apt-get install -y \
     awscli \
@@ -6,6 +7,7 @@ RUN apt-get update && \
     wget \
     curl \
     gnupg \
+    procps \
 #    default-mysql-client \
     && apt-get clean
 

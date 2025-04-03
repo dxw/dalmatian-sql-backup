@@ -1,0 +1,67 @@
+#!/bin/bash
+
+# exit on failures
+set -e
+set -o pipefail
+
+usage() {
+  echo "Usage: $(basename "$0") [OPTIONS]" 1>&2
+  echo "  -h                - help"
+  echo "  -d <delay>        - delay in seconds to check for a mysql/postgres process  ( default 60 )"
+  echo "  -m <max_lifetime> - Maximum time in seconds to keep the container alive ( default 600 )"
+  exit 1
+}
+
+DELAY=60
+MAX_LIFETIME=600
+
+while getopts "d:m:h" opt; do
+  case $opt in
+    d)
+      DELAY=$OPTARG
+      ;;
+    m)
+      MAX_LIFETIME=$OPTARG
+      ;;
+    h)
+      usage
+      ;;
+    *)
+      usage
+      ;;
+  esac
+done
+
+UPTIME=0
+while true
+do
+  sleep "$DELAY"
+  # `grep "proc" | wc -l` for a process always produces 1, because 'grep "proc"' is a child process 
+  # Using `grep -v "grep" | wc -l` does return '0', but also _returns_ 0 (exit code) because `wc` has no input
+  # BASH_PROC_COUNT has -3 rather than -1, because the `ps` command itself creates a child process, `/bin/bash keep-alive`
+  # and then the `ps | grep` process.
+  # This allows the container to launched in ECS Fargate, and then gain a shell via `aws ecs execute-command`,
+  # without unintentionally leaving the container running longer than it should
+  MYSQL_PROC_COUNT="$(ps -aux | grep "mysql" | wc -l)"
+  MYSQL_PROC_COUNT=$((MYSQL_PROC_COUNT - 1))
+  PSQL_PROC_COUNT="$(ps -aux | grep "psql" | wc -l)"
+  PSQL_PROC_COUNT=$((PSQL_PROC_COUNT - 1))
+  BASH_PROC_COUNT="$(ps -aux | grep "/bin/bash" | wc -l)"
+  BASH_PROC_COUNT=$((BASH_PROC_COUNT - 3))
+  if [[
+    "$MYSQL_PROC_COUNT" -lt 1
+    && "$PSQL_PROC_COUNT" -lt 1
+    && "$BASH_PROC_COUNT" -lt 1
+  ]]
+  then
+    echo "No essential process is running. Exiting."
+    exit 0
+  fi
+  UPTIME=$((UPTIME + DELAY))
+  if [ "$UPTIME" -gt "$MAX_LIFETIME" ]
+  then
+    echo "Container has reached it's maximum life time of $MAX_LIFETIME seconds. Exiting."
+    exit 0
+  fi
+  echo "An essential process is running (mysql:$MYSQL_PROC_COUNT psql:$PSQL_PROC_COUNT bash:$BASH_PROC_COUNT). Keeping the container alive. (Uptime: $UPTIME seconds)."
+done
