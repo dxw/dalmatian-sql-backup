@@ -64,9 +64,10 @@ while IFS='' read -r DB_NAME
 do
   DUMP_TARGET="$DUMP_DIR/$DATE_STRING-$DB_NAME.sql"
   echo "==> Dumping '$DB_NAME' database to $DUMP_TARGET ..."
+  DB_NAME="$(echo "$DB_NAME" | xargs)"
   pg_dump \
     --clean \
-    --if-exists "postgres://$DB_USERNAME:$DB_PASSWORD@$DB_HOST:5432/$DB_NAME > $DUMP_TARGET"
+    --if-exists "postgres://$DB_USERNAME:$DB_PASSWORD@$DB_HOST:5432/$DB_NAME" > "$DUMP_TARGET"
 done < <(echo "$DATABASES")
 echo "==> Completed database dumps"
 
