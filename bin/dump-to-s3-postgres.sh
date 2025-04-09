@@ -39,6 +39,11 @@ then
   usage
 fi
 
+if [ -z "$DEFAULT_DB_NAME" ]
+then
+  DEFAULT_DB_NAME="$DB_USER"
+fi
+
 echo "==> Starting backup of PostgreSQL Server $DB_HOST ..."
 DATE_STRING="$(date +%Y%m%d%H%M)"
 DUMP_DIR="/tmp/sqlbackups/$DB_HOST"
@@ -49,6 +54,7 @@ export PGPASSWORD="$DB_PASSWORD"
 DATABASES="$(psql \
   -U "$DB_USER" \
   -h "$DB_HOST" \
+  -d "$DEFAULT_DB_NAME" \
   -t \
   -c 'SELECT datname FROM pg_database WHERE NOT datistemplate' \
   | grep -Ev 'rdsadmin'
