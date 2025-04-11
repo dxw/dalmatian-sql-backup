@@ -1,3 +1,13 @@
+FROM golang:1.24.2-alpine3.21 AS azcopy
+ARG TARGETARCH
+ENV GOARCH=$TARGETARCH GOOS=linux
+WORKDIR /usr/bin
+RUN apk update \
+    && apk add --no-cache libc6-compat ca-certificates
+ADD "https://github.com/Azure/azure-storage-azcopy/archive/v10.28.1.tar.gz" azcopy.tgz
+RUN tar xf azcopy.tgz --strip 1 && \
+    go build -o azcopy && ./azcopy --version
+
 FROM debian:bookworm-slim@sha256:b1211f6d19afd012477bd34fdcabb6b663d680e0f4b0537da6e6b0fd057a3ec3
 
 RUN apt-get update && \
@@ -26,3 +36,4 @@ RUN echo 'deb [ signed-by=/etc/apt/keyrings/mysql.gpg ] http://repo.mysql.com/ap
     && apt-get clean
 
 COPY ./bin/. /usr/local/bin/
+COPY --from=azcopy /usr/bin/azcopy /usr/local/bin/azcopy
