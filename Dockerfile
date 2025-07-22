@@ -8,7 +8,7 @@ ADD "https://github.com/Azure/azure-storage-azcopy/archive/v10.28.1.tar.gz" azco
 RUN tar xf azcopy.tgz --strip 1 && \
     go build -o azcopy && ./azcopy --version
 
-FROM debian:bookworm-slim@sha256:b1211f6d19afd012477bd34fdcabb6b663d680e0f4b0537da6e6b0fd057a3ec3
+FROM debian:bookworm-slim@sha256:2424c1850714a4d94666ec928e24d86de958646737b1d113f5b2207be44d37d8
 
 RUN apt-get update && \
     apt-get install -y \
