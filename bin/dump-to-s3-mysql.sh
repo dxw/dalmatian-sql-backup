@@ -74,6 +74,6 @@ aws s3 sync . "s3://$BUCKET_NAME" \
 echo "==> Uploads complete"
 
 echo "==> Cleaning SQL files ..."
-rm "$DUMP_DIR/*.sql"
+rm -f "$DUMP_DIR"/*.sql
 
 echo "==> SQL Backup Success!"
