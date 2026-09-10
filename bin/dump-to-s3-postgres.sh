@@ -67,7 +67,7 @@ do
   echo "==> Dumping '$DB_NAME' database to $DUMP_TARGET ..."
   pg_dump \
     --clean \
-    --if-exists "postgres://$DB_USERNAME:$DB_PASSWORD@$DB_HOST:5432/$DB_NAME" > "$DUMP_TARGET"
+    --if-exists "postgres://$DB_USER:$DB_PASSWORD@$DB_HOST:5432/$DB_NAME" > "$DUMP_TARGET"
 done < <(echo "$DATABASES")
 echo "==> Completed database dumps"
 

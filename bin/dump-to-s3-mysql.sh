@@ -46,7 +46,7 @@ mkdir -p "$DUMP_DIR"
 
 echo "==> Getting database names ..."
 DATABASES="$(mysql -N \
-  -u "$DB_USERNAME" \
+  -u "$DB_USER" \
   -p"$DB_PASSWORD" \
   -h "$DB_HOST" \
   -e 'show databases' \
